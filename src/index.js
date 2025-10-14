@@ -4,26 +4,30 @@ console.log( `in here` );
 
 
 let myGamePiece;
+let myObstacle;
+// let myObstacles=[];
+let test;
 // let key;
 let keys;
+
+
 function startGame ()
 {
-  myGamePiece = new component( 30, 30, `red`, 10, 120 );
 
   window.addEventListener( 'keydown', function ( e )
   {
-    // key = e.key;
     keys = ( keys || [] );
     keys[ e.key ] = ( e.type == "keydown" );
-
-    console.log( keys );
-    console.log( e.key );
   } )
   window.addEventListener( 'keyup', function ( e )
   {
     // key = false;
     keys[ e.key ] = ( e.type == "keydown" );
   } )
+
+  myGamePiece = new component( 30, 30, `red`, 10, 120 );
+  myObstacle = new component( 40, 200, `green`, 300, 120 );
+  myGameArea().setInterval;
 
   myGameArea().context;
 
@@ -41,8 +45,9 @@ function component ( width, height, color, x, y )
   this.update = () =>
   {
     const ctx = myGameArea().context;
-    ctx.fillColor = color;
+    ctx.fillStyle = color;
     ctx.fillRect( this.x, this.y, this.width, this.height );
+
   }
   this.newPos = () =>
   {
@@ -74,6 +79,27 @@ function component ( width, height, color, x, y )
       this.y += this.speedY;
     }
   }
+
+  this.crashWith = function ( otherobj )
+  {
+    var myleft = this.x;
+    var myright = this.x + ( this.width );
+    var mytop = this.y;
+    var mybottom = this.y + ( this.height );
+    var otherleft = otherobj.x;
+    var otherright = otherobj.x + ( otherobj.width );
+    var othertop = otherobj.y;
+    var otherbottom = otherobj.y + ( otherobj.height );
+    var crash = true;
+    if ( ( mybottom < othertop ) ||
+      ( mytop > otherbottom ) ||
+      ( myright < otherleft ) ||
+      ( myleft > otherright ) )
+    {
+      crash = false;
+    }
+    return crash;
+  }
 }
 
 
@@ -81,31 +107,49 @@ function myGameArea ()
 {
   const canvas_el = document.getElementById( `canvas` );
   const context = canvas_el.getContext( `2d` );
-
-
+  const interval = setInterval( updateGameArea, 20 );
+  const frameNo = 0;
 
   return {
     context,
     width: canvas_el.width,
     height: canvas_el.height,
-    interval: setInterval( updateGameArea, 20 ),
+    interval,
+    frameNo,
     clear: () => { context.clearRect( 0, 0, canvas_el.width, canvas_el.height ) },
+    stop: () => { clearInterval( interval ) },
   }
 }
 
 function updateGameArea ()
 {
-  myGameArea().clear();
-  myGamePiece.speedX = 0;
-  myGamePiece.speedY = 0;
-  if ( keys && keys[ `ArrowLeft` ] ) { myGamePiece.speedX = -1; }
-  if ( keys && keys[ `ArrowRight` ] ) { myGamePiece.speedX = 1; }
-  if ( keys && keys[ `ArrowUp` ] ) { myGamePiece.speedY = -1; }
-  if ( keys && keys[ `ArrowDown` ] ) { myGamePiece.speedY = 1; }
-  myGamePiece.newPos();
-  myGamePiece.update();
+  if ( myGamePiece.crashWith( myObstacle ) )
+  {
+    myGameArea().stop();
+  }
+  else
+  {
+    myGameArea().clear();
+    myGamePiece.speedX = 0;
+    myGamePiece.speedY = 0;
+    if ( keys && keys[ `ArrowLeft` ] ) { myGamePiece.speedX = -.1; }
+    if ( keys && keys[ `ArrowRight` ] ) { myGamePiece.speedX = .1; }
+    if ( keys && keys[ `ArrowUp` ] ) { myGamePiece.speedY = -.2; }
+    if ( keys && keys[ `ArrowDown` ] ) { myGamePiece.speedY = .2; }
+    myGamePiece.newPos();
+    myObstacle.x += -.2;
+    myObstacle.update();
+    myGamePiece.update();
+  }
 
 }
+
+function everyinterval ( n )
+{
+  if ( ( myGameArea().frameNo / n ) % 1 == 0 ) { return true; }
+  return false;
+}
+
 
 
 startGame();
