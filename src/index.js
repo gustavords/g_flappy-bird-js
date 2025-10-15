@@ -11,12 +11,9 @@ const theCanvas = () =>
     ctx.beginPath();
     ctx.clearRect( 0, 0, width, height );
   };
-
-  const atInterval = ( time, frame ) =>
-  {
-    return ( frame / time ) % 1 === 0 ? true : false;
-  }
-  return { canvas_el, ctx, height, width,  clear, atInterval }
+  const atInterval = ( time, frame ) => { return ( frame / time ) % 1 === 0 ? true : false; }
+  const close = ( interval ) => { clearInterval( interval ) };
+  return { canvas_el, ctx, height, width, clear, atInterval, close }
 };
 
 class GameObj
@@ -45,6 +42,31 @@ class GameObj
     this.ypos += this.dy;
   }
 
+  collisionDetected ( gameObj )
+  {
+    let obj_a_left = this.xpos;
+    let obj_a_right = this.xpos + this.width;
+    let obj_a_top = this.ypos;
+    let obj_a_bottom = this.ypos + this.height;
+
+    let obj_b_left = gameObj.xpos;
+    let obj_b_right = gameObj.xpos + gameObj.width;
+    let obj_b_top = gameObj.ypos;
+    let obj_b_bottom = gameObj.ypos + gameObj.height;
+
+    let crash = true;
+
+    if ( ( obj_a_bottom < obj_b_top ) ||
+      ( obj_a_top > obj_b_bottom ) ||
+      ( obj_a_right < obj_b_left ) ||
+      ( obj_a_left > obj_b_right ) )
+    {
+      crash = false;
+    }
+
+    return crash;
+  }
+
   static drawMultipleMoving ( ctx, arr )
   {
     arr.forEach( ( gameObj ) =>
@@ -57,29 +79,16 @@ class GameObj
   {
     if ( frame == 1 || atInterval )
     {
-      arr.push( new GameObj( theCanvas().width, 100, 100, 200, `green`, 0 ) );
+      const rdmNumInRange = ( min, max ) => { return Math.floor( Math.random() * ( max - min ) + min ); }
+      const gapRange = { min: 75, max: 150 };
+      const rdmGap = rdmNumInRange( gapRange.min, gapRange.max );
+      const objRange = { min: 100, max: 500 };
+      const rdmObjHeight = rdmNumInRange( objRange.min, objRange.max );
+      const secondObjHeight = ( ( rdmObjHeight + rdmGap ) - theCanvas().height ) * -1;
+      arr.push( new GameObj( theCanvas().width, 0, 75, rdmObjHeight, `green`, 0 ) )
+      arr.push( new GameObj( theCanvas().width, theCanvas().height - secondObjHeight, 75, secondObjHeight, `green`, 0 ) );
     }
   }
-}
-
-const rec_1 = new GameObj( 10, 10, 50, 50, `black`, 0 );
-const towers = [];
-let currFrame = 0;
-
-function loadOnCanvas ()
-{
-  document.addEventListener( `keydown`, keyHandlerDown );
-  document.addEventListener( `keyup`, keyHandlerUp );
-  theCanvas().clear();
-
-  currFrame++;
-
-  GameObj.createAtInterval( currFrame, theCanvas().atInterval( 200, currFrame ), towers );
-  GameObj.drawMultipleMoving( theCanvas().ctx, towers );
-
-  rec_1.draw( theCanvas().ctx );
-  rec_1.update()
-
 }
 
 function keyHandlerDown ( e )
@@ -123,224 +132,36 @@ function keyHandlerUp ( e )
 
   document.removeEventListener( `keydown`, keyHandlerDown );
 }
-setInterval( loadOnCanvas, 20 );
 
 
+const rec_1 = new GameObj( 10, 10, 50, 50, `black`, 0 );
+const towers = [];
+let currFrame = 0;
 
-// class Screen
-// {
-//   canvas_el = document.getElementById( `canvas` );
-//   canvas_ctx = this.canvas_el.getContext( `2d` );
-//   width = this.canvas_el.width;
-//   height = this.canvas_el.height;
-//   state = () => { return setInterval( gameState, 50 ) };
-//   frame = 0;
+function loadOnCanvas ()
+{
+  document.addEventListener( `keydown`, keyHandlerDown );
+  document.addEventListener( `keyup`, keyHandlerUp );
+  theCanvas().clear();
 
-//   clearCanvas ()
-//   {
-//     this.canvas_ctx.clearRect( 0, 0, this.width, this.height );
-//   }
+  currFrame++;
 
-//   stop ( state )
-//   {
-//     clearInterval( state );
-//   }
-// }
+  towers.forEach( ( obstacle ) =>
+  {
+    if ( rec_1.collisionDetected( obstacle ) )
+    {
+      theCanvas().close( theInterval );
+    };
+  } );
 
-// //should be other name since its all rectangles
-// class GameObject extends Screen
-// {
-//   constructor ( positionX, positionY, colour, width, height )
-//   {
-//     super();
-//     this.positionX = positionX;
-//     this.positionY = positionY;
-//     this.speedX = 0;
-//     this.speedY = 0;
-//     this.colour = colour;
-//     this.width = width;
-//     this.height = height;
-//   }
-//   drawObject ()
-//   {
-//     this.canvas_ctx.fillStyle = this.colour;
-//     this.canvas_ctx.fillRect( this.positionX, this.positionY, this.width, this.height )
-//   }
+  GameObj.createAtInterval( currFrame, theCanvas().atInterval( 275, currFrame ), towers );
+  GameObj.drawMultipleMoving( theCanvas().ctx, towers );
 
-//   collisionDetected ( gameObject )
-//   {
-//     let obj_a_left = this.positionX;
-//     let obj_a_right = this.positionX + this.width;
-//     let obj_a_top = this.positionY;
-//     let obj_a_bottom = this.positionY + this.height;
-
-//     let obj_b_left = gameObject.positionX;
-//     let obj_b_right = gameObject.positionX + gameObject.width;
-//     let obj_b_top = gameObject.positionY;
-//     let obj_b_bottom = gameObject.positionY + gameObject.height;
-
-//     let crash = true;
-
-//     if ( ( obj_a_bottom < obj_b_top ) ||
-//       ( obj_a_top > obj_b_bottom ) ||
-//       ( obj_a_right < obj_b_left ) ||
-//       ( obj_a_left > obj_b_right ) )
-//     {
-//       crash = false;
-//     }
-
-//     return crash;
-//   }
-
-//   updatePosition = () =>
-//   {
-//     this.positionX += this.speedX;
-//     if ( this.positionX >= ( gameArea.width - this.width ) )
-//     {
-//       this.positionX = ( gameArea.width - this.width );
-//       this.speedX = 0;
-//     }
-//     else if ( this.positionX <= 0 )
-//     {
-//       this.positionX = 0;
-//       this.speedX = 0;
-//     }
-//     else
-//     {
-//       this.positionX += this.speedX;
-//     }
-
-//     this.positionY += this.speedY;
-//     if ( this.positionY >= ( gameArea.height - this.height ) )
-//     {
-//       this.positionY = ( gameArea.height - this.height );
-//       this.speedY = 0;
-//     }
-//     else if ( this.positionY <= 0 )
-//     {
-//       this.positionY = 0;
-//       this.speedY = 0;
-//     }
-//     else
-//     {
-//       this.positionY += this.speedY;
-//     }
-//   }
-// }
-
-// //can go in scene
-// function everyInterval ( n )
-// {
-//   if ( ( gameArea.frame / n ) % 1 == 0 )
-//   {
-//     return true;
-//   }
-//   return false;
-
-// }
-
-// //can go in gameObject
-// function drawMultipleObjects ()
-// {
-
-//   gameArea.frame++;
-//   if ( gameArea.frame == 1 || everyInterval( 200 ) )
-//   {
-//     console.log( `here` );
-//     const random = ( min, max ) => { return Math.floor( ( Math.random() * ( max - min ) ) + min ) };
-//     const randomObstacleHeight = random( 100, 425 );
-//     const apposingHeight = ( ( randomObstacleHeight + 100 ) - gameArea.height ) * -1;
-//     console.log( randomObstacleHeight, apposingHeight );
-//     obstacleArr.push( new GameObject( gameArea.width, 0, `green`, 50, randomObstacleHeight ) );
-//     obstacleArr.push( new GameObject( gameArea.width, gameArea.height - apposingHeight, `green`, 50, apposingHeight ) );
-//   }
-//   obstacleArr.forEach( ( obstacle ) =>
-//   {
-//     obstacle.positionX -= 1;
-//     obstacle.drawObject();
-//   } )
-
-// }
-
-// const gameArea = new Screen();
-// const bird = new GameObject( 0, 0, `blue`, 50, 50 );
-// const obstacleArr = [];
-
-// let state = gameArea.state();
-
-// function gameState ()
-// {
-//   gameArea.clearCanvas();
-//   drawMultipleObjects();
-
-//   obstacleArr.forEach( ( obstacle ) =>
-//   {
-//     if ( bird.collisionDetected( obstacle ) )
-//     {
-//       gameArea.stop( state );
-//       return;
-//     }
-//     obstacle.stop();
-//   } );
-//   bird.stop();
-//   gameControls( bird );
-//   bird.updatePosition();
-//   bird.drawObject();
-
-// }
+  rec_1.draw( theCanvas().ctx );
+  rec_1.update()
+}
 
 
-// function gameControls ( gameObject )
-// {
+const theInterval = setInterval( loadOnCanvas, 20 );
+theInterval;
 
-//   window.addEventListener( `keydown`, ( e ) =>
-//   {
-//     speedChange( e, 2 );
-//   } );
-
-//   window.addEventListener( `keyup`, ( e ) =>
-//   {
-//     zeroSpeed();
-//   } );
-
-//   function zeroSpeed ()
-//   {
-//     gameObject.speedX = 0;
-//     gameObject.speedY = 0;
-//     window.removeEventListener( `keyup`, zeroSpeed );
-
-//   }
-//   function speedChange ( event, velocity )
-//   {
-//     if ( event.defaultPrevented )
-//     {
-//       return; // Do nothing if the event was already processed
-//     }
-//     if ( !event.repeat )
-//     {
-//       switch ( event.key )
-//       {
-//         case `ArrowUp`:
-//           gameObject.speedY = -velocity;
-
-//           break;
-//         case `ArrowDown`:
-//           gameObject.speedY = velocity;
-//           break;
-//         case `ArrowLeft`:
-//           gameObject.speedX = -velocity;
-//           break;
-//         case `ArrowRight`:
-//           gameObject.speedX = velocity;
-//           break;
-//       }
-
-//       event.preventDefault();
-//       return;
-//     }
-
-//     window.removeEventListener( `keydown`, speedChange );
-
-//   }
-
-// }
