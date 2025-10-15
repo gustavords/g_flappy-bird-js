@@ -149,6 +149,7 @@ function scoreBoard ( currFrame )
 const rec_1 = new GameObj( 10, 10, 50, 50, `black`, 0 );
 const towers = [];
 let currFrame = 0;
+const circ_1 = circleObj( 100, 75, 50, 0, 2 * Math.PI );
 
 function loadOnCanvas ()
 {
@@ -158,24 +159,74 @@ function loadOnCanvas ()
 
   currFrame++;
 
-  towers.forEach( ( obstacle ) =>
-  {
-    if ( rec_1.collisionDetected( obstacle ) )
-    {
-      theCanvas().close( theInterval );
-      if ( confirm( `Score : ${ scoreBoard( currFrame - 1 ) }\n Restart?` ) )
-      {
-        refreshPage();
-      }
-    };
-  } );
+  // towers.forEach( ( obstacle ) =>
+  // {
+  //   if ( rec_1.collisionDetected( obstacle ) )
+  //   {
+  //     theCanvas().close( theInterval );
+  //     if ( confirm( `Score : ${ scoreBoard( currFrame - 1 ) }\n Restart?` ) )
+  //     {
+  //       refreshPage();
+  //     }
+  //   };
+  // } );
 
-  GameObj.createAtInterval( currFrame, theCanvas().atInterval( 275, currFrame ), towers );
-  GameObj.drawMultipleMoving( theCanvas().ctx, towers );
+  // GameObj.createAtInterval( currFrame, theCanvas().atInterval( 275, currFrame ), towers );
+  // GameObj.drawMultipleMoving( theCanvas().ctx, towers );
+
+  // circ_1.circle.ypos = 400;
+
+  bounceObj( circ_1.circle );
+  circ_1.draw();
+
+
 
   rec_1.draw( theCanvas().ctx );
   scoreBoard( currFrame );
   rec_1.update()
+}
+
+
+
+function circleObj ( x, y, r, start, end )
+{
+  const circle = {
+    xpos: x,
+    ypos: y,
+    radius: r,
+    start: start,
+    end: end
+  }
+
+  function draw ()
+  {
+    theCanvas().ctx.beginPath();
+    theCanvas().ctx.arc( circle.xpos, circle.ypos, circle.radius, circle.start, circle.end );
+    theCanvas().ctx.stroke();
+  }
+  return { circle, draw }
+}
+
+function bounceObj ( gameObj )
+{
+  //  y= h + xtan(α) - gx²/2V₀²cos²(α)
+  let y;
+  const x = gameObj.xpos;
+  const height = 200;
+  const angle = 30;
+  const velocity = 2;
+  const gravity = .1;
+  const tanAt = Math.tan( ( angle * Math.PI ) / 180 );
+  // console.log( tanAt );
+  const cosSquaredAt = Math.pow(( Math.cos( ( angle * Math.PI ) / 180 ) ), 2)  ;
+  // console.log( cosSquaredAt );
+  y = height + ( x * tanAt ) - ( gravity * ( Math.pow( x, 2 ) ) ) / ( 2 * ( Math.pow( velocity, 2 ) ) * cosSquaredAt )
+  y = Math.round(y) * -1 ;
+  console.log( y );
+
+  gameObj.ypos = y;
+  gameObj.xpos++;
+
 }
 
 const theInterval = setInterval( loadOnCanvas, 20 );
