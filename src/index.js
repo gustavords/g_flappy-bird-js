@@ -132,6 +132,18 @@ function keyHandlerUp ( e )
 
   document.removeEventListener( `keydown`, keyHandlerDown );
 }
+function refreshPage ()
+{
+  window.location.reload();
+}
+
+function scoreBoard ( currFrame )
+{
+  theCanvas().ctx.font = "bold 25px serif";
+  let text = `score: ` + currFrame;
+  theCanvas().ctx.fillText( text, ( theCanvas().width - theCanvas().ctx.measureText( text ).width ) - 25, 25 )
+  return currFrame;
+}
 
 
 const rec_1 = new GameObj( 10, 10, 50, 50, `black`, 0 );
@@ -151,6 +163,10 @@ function loadOnCanvas ()
     if ( rec_1.collisionDetected( obstacle ) )
     {
       theCanvas().close( theInterval );
+      if ( confirm( `Score : ${ scoreBoard( currFrame - 1 ) }\n Restart?` ) )
+      {
+        refreshPage();
+      }
     };
   } );
 
@@ -158,10 +174,9 @@ function loadOnCanvas ()
   GameObj.drawMultipleMoving( theCanvas().ctx, towers );
 
   rec_1.draw( theCanvas().ctx );
+  scoreBoard( currFrame );
   rec_1.update()
 }
 
-
 const theInterval = setInterval( loadOnCanvas, 20 );
 theInterval;
-
