@@ -1,5 +1,5 @@
 {
-	"name": "o_todo",
+	"name": "g_flappy-bird",
 	"version": "1.0.0",
 	"description": "Gustavo's FlappyBird Javascript Project",
 	"main": "index.js",
