@@ -132,6 +132,7 @@ function keyHandlerUp ( e )
 
   document.removeEventListener( `keydown`, keyHandlerDown );
 }
+
 function refreshPage ()
 {
   window.location.reload();
@@ -145,7 +146,6 @@ function scoreBoard ( currFrame )
   theCanvas().ctx.fillText( text, ( theCanvas().width - theCanvas().ctx.measureText( text ).width ) - 25, 25 )
   return currFrame;
 }
-
 
 const rec_1 = new GameObj( 10, 10, 50, 50, `black`, 0 );
 const towers = [];
@@ -188,8 +188,6 @@ function loadOnCanvas ()
   // rec_1.update()
 }
 
-
-
 function circleObj ( x, y, r, start, end, speed )
 {
   const circle = {
@@ -217,34 +215,34 @@ function circleObj ( x, y, r, start, end, speed )
 
   function wallCollision ( circleObj )
   {
-    if ( circle.ypos + circle.radius > theCanvas().height )
+    if ( circle.ypos + circle.radius >= theCanvas().height )
     {
-      console.log( `here` );
-      console.log( circle.ypos + ` its the low` );
+      // console.log( `here` );
+      // console.log( circle.ypos + ` its the low` );
       circle.dy *= -1;
     }
 
     if ( circle.ypos - circle.radius < 0 )
     {
-      console.log( `here` );
-      console.log( circle.ypos );
+      // console.log( `here` );
+      // console.log( circle.ypos );
       circle.dy *= -1;
     }
     if ( circle.xpos + circle.radius > theCanvas().width )
     {
-      console.log( `here` );
-      console.log( circle.xpos );
+      // console.log( `here` );
+      // console.log( circle.xpos );
       circle.dx *= -1;
     }
     if ( circle.xpos - circle.radius < 0 )
     {
-      console.log( `here` );
-      console.log( circle.xpos );
+      // console.log( `here` );
+      // console.log( circle.xpos );
       circle.dx *= -1;
     }
   }
 
-  function objCollision (gameObj)
+  function objCollision ( gameObj )
   {
     let obj_a_left = circle.xpos - circle.radius;
     let obj_a_right = circle.xpos + circle.radius;
@@ -287,6 +285,7 @@ function spaceBarKeyHandler ( e )
   document.removeEventListener( `keydown`, spaceBarKeyHandler );
 }
 
+//doesnt work good
 function bounceObj ( gameObj )
 {
   //  y= h + xtan(α) - gx²/2V₀²cos²(α)
