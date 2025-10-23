@@ -2,7 +2,7 @@
 	"name": "g_flappy-bird",
 	"version": "1.0.0",
 	"description": "Gustavo's FlappyBird Javascript Project",
-	"main": "index.js",
+	"main": "main.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"watch": "webpack --watch",

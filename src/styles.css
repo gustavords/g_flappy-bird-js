@@ -28,5 +28,5 @@ body {
 
 #canvas {
     border: 1px red solid;
-    background-color: blue;
+    /* background-color: blue; */
 }
