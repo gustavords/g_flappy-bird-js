@@ -20,8 +20,14 @@ class Rectangle
     this.width = width;
     this.height = height;
     this.ctx = ctx;
-    this.dx = undefined ?? 1;
-    this.dy = undefined  ?? -1;
+    this.dx = dx ?? 1;
+    this.dy = dy ?? -1;
+  }
+
+  move = () =>
+  {
+    this.x += this.dx;
+    this.y += this.dy;
   }
 
   draw ()

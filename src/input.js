@@ -111,13 +111,11 @@ class Controller
     }
   }
 
-  jump ( obj, gravity )
+  jump ( obj )
   {
     if ( this.direction === JUMP )
     {
-      // obj.x += obj.dx;
-      obj.y += -5;
-      // obj.y += gravity;
+      obj.dy -= 5; 
     }
   }
 }
