@@ -5,6 +5,7 @@
  * - grabbing items
  * - collision stuff
 */
+import { tr } from "date-fns/locale";
 import { Rectangle } from "./assets.js";
 import { ctx, CANVAS_HEIGHT, CANVAS_WIDTH, intervalCounter, intervalId } from "./main.js"
 export { Boundary, Obstacle }
@@ -41,7 +42,7 @@ class Boundary
       obj.dy *= -0.88; //reflection with damping;
       // for when obj goes beyond canvas   
       obj.y += -( ( obj.y + obj.height ) - this.canvas_height ) * 1.5
-      return true;
+      return this.inBoundary = true;
     }
   }
 }
@@ -51,6 +52,12 @@ class Obstacle
   constructor ()
   {
     this.obstacleArr = []
+    this.hasHit = false;
+  }
+
+  get hasCollided ()
+  {
+    return this.hasHit;
   }
 
   obstacleGeneration ()
@@ -114,23 +121,13 @@ class Obstacle
     this.obstacleArr.forEach( obstacle =>
     {
 
-      const yA1 = obj.y;
-      const yB1 = obj.y + obj.height;
-      const yA2 = obstacle.y;
-      const yB2 = obstacle.y + obstacle.height;
-      const xA1 = obj.x;
-      const xB1 = obj.x + obj.width;
-      const xA2 = obstacle.x;
-      const xB2 = obstacle.x + obstacle.width;
-
-      if ( ( yA1 <= yB2 && yB2 < yB1 || yB1 >= yA2 && yA1 < yA2 ) &&
-        ( xA1 <= xB2 && xB2 < xB1 || xB1 >= xA2 && xA1 < xA2 ) )
+      if ( obj.x < obstacle.x + obstacle.width && obj.x + obj.width > obstacle.x &&
+        obj.y < obstacle.y + obstacle.height && obj.y + obj.height > obstacle.y )
       {
+        this.hasHit = true;
         clearInterval( intervalId );
       }
-
     } );
-
 
   }
 

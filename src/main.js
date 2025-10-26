@@ -1,3 +1,4 @@
+import { Dialog } from './menu.js';
 import { Rectangle } from "./assets";
 import { Controller, LEFT, RIGHT, UP, DOWN } from "./input";
 import { Boundary, Obstacle } from "./logic";
@@ -17,6 +18,7 @@ const rect = new Rectangle( { x: CANVAS_WIDTH / 3, y: CANVAS_HEIGHT / 2, width: 
 const control = new Controller();
 const walls = new Boundary( { ctx: ctx, canvas_height: CANVAS_HEIGHT, canvas_width: CANVAS_WIDTH } );
 const obstacles = new Obstacle();
+const dialog = new Dialog();
 
 
 function game ()
@@ -30,7 +32,12 @@ function game ()
 
   obstacles.obstacleGeneration();
   obstacles.draw();
-  obstacles.collision(rect);
+  obstacles.collision( rect );
+
+  if ( obstacles.hasCollided )
+  {
+    dialog.show();
+  }
 
   rect.move();
   rect.draw();
