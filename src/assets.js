@@ -35,5 +35,4 @@ class Rectangle
     this.ctx.fillRect( this.x, this.y, this.width, this.height );
   }
 
-
 }

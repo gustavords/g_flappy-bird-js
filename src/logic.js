@@ -6,7 +6,7 @@
  * - collision stuff
 */
 import { Rectangle } from "./assets.js";
-import { ctx, CANVAS_HEIGHT, CANVAS_WIDTH, intervalCounter } from "./main.js"
+import { ctx, CANVAS_HEIGHT, CANVAS_WIDTH, intervalCounter, intervalId } from "./main.js"
 export { Boundary, Obstacle }
 
 class Boundary
@@ -17,8 +17,6 @@ class Boundary
     this.canvas_width = canvas_width;
     this.canvas_height = canvas_height;
     this.inBoundary;
-
-
   }
 
   collided ( obj )
@@ -70,12 +68,12 @@ class Obstacle
 
     if ( intervalCounter % 50 === 0 )
     {
-      const top = new Rectangle( {  
+      const top = new Rectangle( {
         x: CANVAS_WIDTH,
         y: 0,
         width: 65,
         height: topH,
-        ctx: ctx, 
+        ctx: ctx,
         dx: 5,
         dy: 0,
       } );
@@ -110,8 +108,30 @@ class Obstacle
 
   }
 
+  collision ( obj )
+  {
+
+    this.obstacleArr.forEach( obstacle =>
+    {
+
+      const yA1 = obj.y;
+      const yB1 = obj.y + obj.height;
+      const yA2 = obstacle.y;
+      const yB2 = obstacle.y + obstacle.height;
+      const xA1 = obj.x;
+      const xB1 = obj.x + obj.width;
+      const xA2 = obstacle.x;
+      const xB2 = obstacle.x + obstacle.width;
+
+      if ( ( yA1 <= yB2 && yB2 < yB1 || yB1 >= yA2 && yA1 < yA2 ) &&
+        ( xA1 <= xB2 && xB2 < xB1 || xB1 >= xA2 && xA1 < xA2 ) )
+      {
+        clearInterval( intervalId );
+      }
+
+    } );
 
 
-
+  }
 
 }
