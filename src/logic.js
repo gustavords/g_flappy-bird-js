@@ -5,9 +5,8 @@
  * - grabbing items
  * - collision stuff
 */
-import { tr } from "date-fns/locale";
 import { Rectangle } from "./assets.js";
-import { ctx, CANVAS_HEIGHT, CANVAS_WIDTH, intervalCounter, intervalId } from "./main.js"
+import { ctx, CANVAS_HEIGHT, CANVAS_WIDTH, intervalCounter, intervalId, stopGame, deltaTimeInSeconds } from "./main.js"
 export { Boundary, Obstacle }
 
 class Boundary
@@ -22,24 +21,10 @@ class Boundary
 
   collided ( obj )
   {
-
-    // if ( obj.x + obj.width >= canvas.width || obj.x <= 0 )
-    // {
-    //   // obj.dx = 0;
-    //   // obj.dy = 0;
-    //   this.inBoundary = false;
-    // }
-    // if ( obj.y + obj.height >= canvas.height || obj.y <= 0 )
-    // {
-    //   // obj.dx = 0;
-    //   // obj.dy = 0;
-    //   this.inBoundary = false;
-    // }
-
     if ( ( obj.y + obj.height ) >= this.canvas_height )
     {
       // obj.dy = -obj.dy; 
-      obj.dy *= -0.88; //reflection with damping;
+      obj.dy *= -.6; //reflection with damping;
       // for when obj goes beyond canvas   
       obj.y += -( ( obj.y + obj.height ) - this.canvas_height ) * 1.5
       return this.inBoundary = true;
@@ -72,16 +57,17 @@ class Obstacle
     const bottomY = topH + spaceBetween;
     const bottomH = CANVAS_HEIGHT - bottomY;
 
-
-    if ( intervalCounter % 50 === 0 )
+    if ( deltaTimeInSeconds % 60 === 0 )
     {
+      console.log( deltaTimeInSeconds + `-------------------------` )
+
       const top = new Rectangle( {
         x: CANVAS_WIDTH,
         y: 0,
         width: 65,
         height: topH,
         ctx: ctx,
-        dx: 5,
+        dx: 1,
         dy: 0,
       } );
 
@@ -91,7 +77,7 @@ class Obstacle
         width: 65,
         height: bottomH,
         ctx: ctx,
-        dx: 5,
+        dx: 1,
         dy: 0,
       } );
 
@@ -125,7 +111,8 @@ class Obstacle
         obj.y < obstacle.y + obstacle.height && obj.y + obj.height > obstacle.y )
       {
         this.hasHit = true;
-        clearInterval( intervalId );
+        // clearInterval( intervalId );
+        stopGame();
       }
     } );
 

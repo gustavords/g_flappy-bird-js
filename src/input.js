@@ -115,7 +115,7 @@ class Controller
   {
     if ( this.direction === JUMP )
     {
-      obj.dy -= 5; 
+      obj.dy -= 1.3; 
     }
   }
 }
