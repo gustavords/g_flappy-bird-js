@@ -1,3 +1,5 @@
+import { obstacles } from "./main.js";
+
 export class Animate
 {
   constructor ( canvas, update, render )
@@ -22,7 +24,7 @@ export class Animate
   {
     if ( !this.animationId || this.animationId )
     {
-      this.animationId = requestAnimationFrame( this.animateGame );
+      this.animationId = window.requestAnimationFrame( this.animateGame );
     }
   }
 
@@ -30,8 +32,11 @@ export class Animate
   {
     if ( this.animationId )
     {
-      cancelAnimationFrame( this.animationId );
+      console.log( `cancel` )
+      window.cancelAnimationFrame( this.animationId );
     }
+    window.cancelAnimationFrame( this.animationId );
+
   }
 
   animateGame = ( timestamp ) =>
@@ -51,6 +56,11 @@ export class Animate
     this.render()
 
     this.start();
+
+    if ( obstacles.hasCollided )
+    {
+      this.stop()
+    }
   }
 
 }

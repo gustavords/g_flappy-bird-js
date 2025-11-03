@@ -1,13 +1,16 @@
 import birdDude from "./assets/bird-dude.png";
+import towerDown from "./assets/tower.png"
+import towerUp from "./assets/tower-flip.png"
 
-
-export class ResourceLoader
+class ResourceLoader
 {
   constructor ()
   {
     //WANT THIS CREATED AT MOMENT OF INITIALIZATION
     this.toLoad = {
       bird: birdDude,
+      towerD: towerDown,
+      towerU: towerUp,
     }
 
     this.loadedImages = {};
@@ -24,7 +27,6 @@ export class ResourceLoader
 
       img.onload = () =>
       {
-        console.log(`please fucking load`)
         this.loadedImages[ key ].hasLoaded = true;
       }
     } );
@@ -33,3 +35,5 @@ export class ResourceLoader
 
 
 }
+
+export const resources = new ResourceLoader();

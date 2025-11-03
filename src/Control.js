@@ -43,7 +43,7 @@ export class Control
       }
       else
       {
-        console.log( this.repeat )
+        // console.log( this.repeat )
       }
 
 
